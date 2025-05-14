@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <climits>
+#include <chrono>
 using namespace std;
 
 class MinHeap {
@@ -154,7 +155,13 @@ int main() {
 
 	vector<vector<pair<int, int>>> adjList = initGraph(V);
 
+	auto start = chrono::high_resolution_clock::now();
 	dijkstra(V, 0, adjList);
+	auto stop = chrono::high_resolution_clock::now();
+
+	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+	cout << duration.count() << "ms" << endl;
 
 	return 0;
 }
