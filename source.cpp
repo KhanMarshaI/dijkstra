@@ -105,6 +105,13 @@ vector<vector<pair<int, int>>> initGraph(int V) {
 	return adjList;
 }
 
+vector<vector<pair<int, int>>> random_graph(int nodes, int edges_limit, int seed = 0, int start = 0, int end = INT_MAX) {
+
+	vector<vector<pair<int, int>>> adjList(nodes);
+
+
+}
+
 void dijkstra(int V, int source, vector<vector<pair<int, int>>>& adjList) {
 	vector<int> dist(V, INT_MAX);
 	dist[source] = 0;
