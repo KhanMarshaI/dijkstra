@@ -77,22 +77,25 @@ void printGraph(vector<vector<pair<int, int>>>& graph, int V) {
 	}
 }
 
-vector<vector<pair<int, int>>>& initGraph(int V) {
+vector<vector<pair<int, int>>> initGraph(int V) {
 
 	vector<vector<pair<int, int>>> adjList(V);
 
-	int n;
-	int neighbour, weight;
+	int n, neighbour, weight;
 	for (int i = 0; i < V; i++) {
-
-		cout << "How many neighbours of " << i << "?" << endl;
+		cout << "How many neighbours of " << i << "? ";
 		cin >> n;
 
 		for (int j = 0; j < n; j++) {
 			cin >> neighbour >> weight;
 
-			adjList[i].push_back({ neighbour,weight });
-			adjList[neighbour].push_back({ i,weight });
+			if (neighbour >= V || neighbour < 0) {
+				cout << "Invalid neighbour index: " << neighbour << ". Skipping.\n";
+				continue;
+			}
+
+			adjList[i].push_back({ neighbour, weight });
+			adjList[neighbour].push_back({ i, weight }); // since undirected
 		}
 
 		printGraph(adjList, V);
@@ -101,13 +104,57 @@ vector<vector<pair<int, int>>>& initGraph(int V) {
 	return adjList;
 }
 
+void dijkstra(int V, int source, vector<vector<pair<int, int>>>& adjList) {
+	vector<int> dist(V, INT_MAX);
+	dist[source] = 0;
+
+	MinHeap minHeap;
+	minHeap.push(make_pair(0,source)); //weight,vertices
+
+	while (!minHeap.empty()) {
+		pair<int, int> top = minHeap.top();
+		minHeap.pop();
+
+		int d = top.first; //dist
+		int u = top.second; //vertices
+
+		if (d > dist[u]) continue;
+
+		vector<pair<int, int>>& neighbours = adjList[u]; //get neighbour of current vertices
+
+		for (size_t i = 0; i < neighbours.size(); ++i) {
+			int v = neighbours[i].first; //neighbour vertices
+			int weight = neighbours[i].second;
+
+			if (dist[u] + weight < dist[v]) {
+				dist[v] = dist[u] + weight;
+
+				minHeap.push(make_pair(dist[v], v));
+			}
+
+		}
+
+	}
+
+	for (int i = 0; i < V; ++i) {
+		cout << "Distance from " << source << " to " << i << ": ";
+		if (dist[i] == INT_MAX)
+			cout << "INF\n";
+		else
+			cout << dist[i] << "\n";
+	}
+
+}
+
 int main() {
 	int V;
 
 	cout << "Vertices? ";
 	cin >> V;
 
-	vector<vector<pair<int, int>>>& adjList = initGraph(V);
+	vector<vector<pair<int, int>>> adjList = initGraph(V);
+
+	dijkstra(V, 0, adjList);
 
 	return 0;
 }
