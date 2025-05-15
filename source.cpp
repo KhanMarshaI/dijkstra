@@ -228,7 +228,7 @@ int main() {
 	cout << "Edge limit? ";
 	cin >> E;
 
-	int seed = 1234;
+	int seed = 1051962;
 
 	auto start = chrono::high_resolution_clock::now();
 	vector<vector<pair<int, int>>> adjList = random_graph(V,E,seed);
@@ -239,7 +239,7 @@ int main() {
 	cout << "Random generation of " << V << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
 	start = chrono::high_resolution_clock::now();
-	adjList = random_cost_generator(adjList, seed, 0, 50);
+	adjList = random_cost_generator(adjList, seed, 1, 50);
 	stop = chrono::high_resolution_clock::now();
 
 	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
