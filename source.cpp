@@ -2,6 +2,7 @@
 #include <vector>
 #include <climits>
 #include <chrono>
+#include <random> //cost range
 using namespace std;
 
 class MinHeap {
@@ -105,11 +106,75 @@ vector<vector<pair<int, int>>> initGraph(int V) {
 	return adjList;
 }
 
-vector<vector<pair<int, int>>> random_graph(int nodes, int edges_limit, int seed = 0, int start = 0, int end = INT_MAX) {
-
+vector<vector<pair<int, int>>> random_graph(int nodes, int edges_limit, int seed = 0) {
+	
 	vector<vector<pair<int, int>>> adjList(nodes);
+	
+	srand(seed);
+	
+	vector<vector<bool>> existing(nodes, vector<bool>(nodes, false));
 
+	vector<bool> connected(nodes, false);
+	connected[0] = true;
+	int connected_count = 1;
+	int edge_count = 0;
+	
+	//partial spanning tree
+	while (connected_count < nodes && edge_count < edges_limit) {
+		int u = rand() % nodes;
+		while (!connected[u]) u = rand() % nodes;
 
+		int v = rand() % nodes;
+		while (connected[v] || u == v) v = rand() % nodes;
+
+		adjList[u].push_back({ v,0 });
+		adjList[v].push_back({ u,0 });
+		
+		existing[u][v] = existing[v][u] = true;
+		connected[v] = true;
+
+		connected_count++;
+		edge_count++;
+
+	}
+
+	//denser graph (higher chance of all nodes being connected)
+	while (edge_count < edges_limit) {
+		int u = rand() % nodes;
+		int v = rand() % nodes;
+
+		if (u == v) continue;
+		if (u > v) swap(u, v); // Ensure u < v for consistency
+		if (existing[u][v]) continue;
+
+		adjList[u].push_back({ v, 0 });
+		adjList[v].push_back({ u, 0 });
+
+		existing[u][v] = true;
+		edge_count++;
+	}
+
+	return adjList;
+}
+
+vector<vector<pair<int, int>>> random_cost_generator(vector<vector<pair<int, int>>> adjList, int seed = 0, int start = 0, int end = INT_MAX) {
+	
+	mt19937 rng(seed);
+	
+	uniform_int_distribution<int> dist(start, end);
+
+	for (int i = 0; i < adjList.size(); i++) {
+
+		for (int j = 0; j < adjList[i].size(); j++) {
+			
+			int cost = dist(rng);
+			adjList[i][j].second = cost;
+
+		}
+
+	}
+
+	return adjList;
 }
 
 void dijkstra(int V, int source, vector<vector<pair<int, int>>>& adjList) {
@@ -155,20 +220,39 @@ void dijkstra(int V, int source, vector<vector<pair<int, int>>>& adjList) {
 }
 
 int main() {
-	int V;
+	int V,E;
 
 	cout << "Vertices? ";
 	cin >> V;
 
-	vector<vector<pair<int, int>>> adjList = initGraph(V);
+	cout << "Edge limit? ";
+	cin >> E;
+
+	int seed = 1234;
 
 	auto start = chrono::high_resolution_clock::now();
-	dijkstra(V, 0, adjList);
+	vector<vector<pair<int, int>>> adjList = random_graph(V,E,seed);
 	auto stop = chrono::high_resolution_clock::now();
 
 	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 
-	cout << duration.count() << "ms" << endl;
+	cout << "Random generation of " << V << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+	start = chrono::high_resolution_clock::now();
+	adjList = random_cost_generator(adjList, seed, 0, 50);
+	stop = chrono::high_resolution_clock::now();
+
+	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+	cout << "Random cost generation of " << V << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+
+	start = chrono::high_resolution_clock::now();
+	dijkstra(V, 0, adjList);
+	stop = chrono::high_resolution_clock::now();
+
+	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+	cout << "Dijsktra for " << V << " vertices took " << duration.count() << "microsec" << endl;
 
 	return 0;
 }
