@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <climits>
+#include <random>
 using namespace std;
 
 class MinHeap {
@@ -94,10 +97,10 @@ struct vertex {
 };
 
 class Graph {
-	int V; //tot vertices
-	vertex* vertices;
-
 public:
+	vertex* vertices;
+	int V; //tot vertices
+
 	//constructor
 	Graph(int v) {
 		V = v;
@@ -200,6 +203,46 @@ Graph random_graph(int nodes, int edges_limit, int seed = 0) {
 	return g;
 }
 
+Graph& random_cost_generator(Graph& g, int seed = 0, int start = 0,int end = INT_MAX) {
+	mt19937 rng(seed);
+
+	uniform_int_distribution<int> dist(start, end);
+
+	vector<vector<bool>> assigned(g.V, vector<bool>(g.V, false)); //easier to track
+
+	for (int i = 0; i < g.V; i++) {
+		adjNode* current = g.vertices[i].head; //current source
+
+		while (current) {
+			int v = current->dest; //neighbor
+
+			if (!assigned[i][v]) {
+				int weight = dist(rng);
+
+				// u->v
+				current->weight = weight;
+
+				//v->u
+				adjNode* reverseNode = g.vertices[v].head;
+				//for v the current source could be anywhere
+				while (reverseNode) {
+					if (reverseNode->dest == i) {
+						reverseNode->weight = weight;
+						break;
+					}
+					reverseNode = reverseNode->next;
+				}
+
+				assigned[i][v] = assigned[v][i] = true;
+			}
+
+			current = current->next;
+		}
+	}
+
+	return g;
+}
+
 int main() {
 	int vertices;
 	cout << "Ver? ";
@@ -211,9 +254,21 @@ int main() {
 
 	int seed = 1051962;
 
+	auto start = chrono::high_resolution_clock::now();
 	Graph g = random_graph(vertices, edge_limit, seed);
+	auto stop = chrono::high_resolution_clock::now();
 
-	g.printGraph();
+	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+	
+	cout << "Random generation of " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+	start = chrono::high_resolution_clock::now();
+	g = random_cost_generator(g, seed, 1, 50);
+	stop = chrono::high_resolution_clock::now();
+
+	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+	cout << "Random cost generation of " << edge_limit << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
 	return 0;
 }
