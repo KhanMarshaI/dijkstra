@@ -3,6 +3,7 @@
 #include <climits>
 #include <chrono>
 #include <random> //cost range
+#include <fstream>
 using namespace std;
 
 class MinHeap {
@@ -66,6 +67,25 @@ public:
 	}
 
 };
+
+void printGraph_toFile(vector<vector<pair<int, int>>>& adjList, int V, const string& filename) {
+	ofstream outFile(filename);
+	if (!outFile.is_open()) {
+		cerr << "Error: Could not open file " << filename << " for writing.\n";
+		return;
+	}
+	outFile << "Edges in the graph (u, v, w):\n";
+	for (int u = 0; u < V; u++) {
+		for (const auto& edge : adjList[u]) {
+			int v = edge.first;
+			int w = edge.second;
+			if (u < v) { // Print only if u < v to avoid duplicates
+				outFile << "(" << u << ", " << v << ", " << w << ")\n";
+			}
+		}
+	}
+	outFile.close();
+}
 
 void printGraph(vector<vector<pair<int, int>>>& graph, int V) {
 	
@@ -163,16 +183,25 @@ vector<vector<pair<int, int>>> random_cost_generator(vector<vector<pair<int, int
 	
 	uniform_int_distribution<int> dist(start, end);
 
-	for (int i = 0; i < adjList.size(); i++) {
+	for (int u = 0; u < adjList.size(); u++) {
+		for (int i = 0; i < adjList[u].size(); i++) {
+			int v = adjList[u][i].first;
 
-		for (int j = 0; j < adjList[i].size(); j++) {
-			
-			int cost = dist(rng);
-			adjList[i][j].second = cost;
+			if (u < v) { //Only assign for one direction to avoid duplication
+				int cost = dist(rng);
+				adjList[u][i].second = cost;
 
+				//Find and set the reverse edge
+				for (int j = 0; j < adjList[v].size(); j++) {
+					if (adjList[v][j].first == u) {
+						adjList[v][j].second = cost;
+						break;
+					}
+				}
+			}
 		}
-
 	}
+
 
 	return adjList;
 }
@@ -253,6 +282,8 @@ int main() {
 	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 
 	cout << "Dijsktra for " << V << " vertices took " << duration.count() << "microsec" << endl;
+	
+	//printGraph_toFile(adjList, V, "graph.txt");
 
 	return 0;
 }
