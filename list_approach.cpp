@@ -243,6 +243,43 @@ Graph& random_cost_generator(Graph& g, int seed = 0, int start = 0,int end = INT
 	return g;
 }
 
+void dijkstra(int V, int source, Graph& g) {
+	vector<int> dist(V, INT_MAX);
+	dist[source] = 0;
+
+	MinHeap minHeap;
+	minHeap.push({ 0,source });
+
+	while (!minHeap.empty()) {
+		pair<int, int> top = minHeap.top();
+		minHeap.pop();
+
+		int d = top.first;
+		int u = top.second;
+
+		adjNode* current = g.vertices[u].head;
+
+		while (current) {
+			int v = current->dest;
+			int weight = current->weight;
+
+			if (dist[u] + weight < dist[v]) {
+				dist[v] = dist[u] + weight;
+				minHeap.push({ dist[v],v });
+			}
+
+			current = current->next;
+		}
+
+	}
+
+	cout << "Shortest distances from source " << source << ":\n";
+	for (int i = 0; i < V; ++i) {
+		cout << "Vertex " << i << ": " << dist[i] << endl;
+	}
+
+}
+
 int main() {
 	int vertices;
 	cout << "Ver? ";
@@ -269,6 +306,16 @@ int main() {
 	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 
 	cout << "Random cost generation of " << edge_limit << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+	start = chrono::high_resolution_clock::now();
+	dijkstra(vertices, 0, g);
+	stop = chrono::high_resolution_clock::now();
+
+	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+	cout << "Dijkstra on " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+	//g.printGraph();
 
 	return 0;
 }
