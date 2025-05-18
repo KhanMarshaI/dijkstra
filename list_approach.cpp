@@ -280,42 +280,42 @@ void dijkstra(int V, int source, Graph& g) {
 
 }
 
-int main() {
-	int vertices;
-	cout << "Ver? ";
-	cin >> vertices;
-
-	int edge_limit;
-	cout << "Edge Limit? ";
-	cin >> edge_limit;
-
-	int seed = 1051962;
-
-	auto start = chrono::high_resolution_clock::now();
-	Graph g = random_graph(vertices, edge_limit, seed);
-	auto stop = chrono::high_resolution_clock::now();
-
-	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-	
-	cout << "Random generation of " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
-
-	start = chrono::high_resolution_clock::now();
-	g = random_cost_generator(g, seed, 1, 50);
-	stop = chrono::high_resolution_clock::now();
-
-	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-
-	cout << "Random cost generation of " << edge_limit << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
-
-	start = chrono::high_resolution_clock::now();
-	dijkstra(vertices, 0, g);
-	stop = chrono::high_resolution_clock::now();
-
-	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-
-	cout << "Dijkstra on " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
-
-	//g.printGraph();
-
-	return 0;
-}
+//int main() {
+//	int vertices;
+//	cout << "Ver? ";
+//	cin >> vertices;
+//
+//	int edge_limit;
+//	cout << "Edge Limit? ";
+//	cin >> edge_limit;
+//
+//	int seed = 1051962;
+//
+//	auto start = chrono::high_resolution_clock::now();
+//	Graph g = random_graph(vertices, edge_limit, seed);
+//	auto stop = chrono::high_resolution_clock::now();
+//
+//	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+//	
+//	cout << "Random generation of " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+//
+//	start = chrono::high_resolution_clock::now();
+//	g = random_cost_generator(g, seed, 1, 50);
+//	stop = chrono::high_resolution_clock::now();
+//
+//	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+//
+//	cout << "Random cost generation of " << edge_limit << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
+//
+//	start = chrono::high_resolution_clock::now();
+//	dijkstra(vertices, 0, g);
+//	stop = chrono::high_resolution_clock::now();
+//
+//	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+//
+//	cout << "Dijkstra on " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+//
+//	//g.printGraph();
+//
+//	return 0;
+//}
