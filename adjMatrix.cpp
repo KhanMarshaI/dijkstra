@@ -123,6 +123,26 @@ int** random_graph(int nodes, int edges_limit, int seed = 0) {
 	return graph;
 }
 
+int** random_cost_generation(int** graph, int V, int seed=0,int start=0, int end=INT_MAX) {
+	mt19937 rng(seed);
+
+	uniform_int_distribution<int> dist(start, end);
+
+	for (int i = 0; i < V; i++) {
+		for (int j = i + 1; j < V; j++) {
+
+			if (graph[i][j] == 0) {
+				int cost = dist(rng);
+				graph[i][j] = cost;
+				graph[j][i] = cost;
+			}
+
+		}
+	}
+
+	return graph;
+}
+
 int main() {
 	int V;
 	cout << "Vertices? ";
@@ -141,6 +161,14 @@ int main() {
 	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 
 	cout << "Random generation of " << V << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+	start = chrono::high_resolution_clock::now();
+	graph = random_cost_generation(graph, V, seed, 1, 50);
+	stop = chrono::high_resolution_clock::now();
+
+	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+	cout << "Random cost generation of " << edges << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
 	//populateGraph(graph, V, edges);
 	//printGraph(graph, V);
