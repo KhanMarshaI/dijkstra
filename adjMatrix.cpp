@@ -143,6 +143,93 @@ int** random_cost_generation(int** graph, int V, int seed=0,int start=0, int end
 	return graph;
 }
 
+struct Node {
+	int vertex;
+	int dist;
+};
+
+class MinHeap {
+private:
+	Node* heap;
+	int capacity;
+	int size;
+
+	int parent(int i) { return (i - 1) / 2; }
+	int left(int i) { return 2 * i + 1; }
+	int right(int i) { return 2 * i + 2; }
+
+	void swap(Node& a, Node& b) {
+		Node temp = a;
+		a = b;
+		b = temp;
+	}
+
+	void heapifyUp(int idx) {
+		while (idx != 0 && heap[parent(idx)].dist > heap[idx].dist) {
+			swap(heap[idx], heap[parent(idx)]);
+			idx = parent(idx);
+		}
+	}
+
+	void heapifyDown(int idx) {
+		int smallest = idx;
+		int l = left(idx);
+		int r = right(idx);
+
+		if (l < size && heap[l].dist < heap[smallest].dist) smallest = l;
+		if (r < size && heap[l].dist < heap[smallest].dist) smallest = r;
+
+		if (smallest != idx) {
+			swap(heap[idx], heap[smallest]);
+			heapifyDown(smallest);
+		}
+	}
+
+public:
+	MinHeap(int c) {
+		capacity = c;
+		size = 0;
+		heap = new Node[capacity];
+	}
+
+	~MinHeap() {
+		delete[] heap;
+	}
+
+	bool empty() {
+		return size == 0;
+	}
+
+	void push(int v, int d) {
+		if (size == capacity) return;
+
+		heap[size] = { v,d };
+		heapifyUp(size);
+		size++;
+	}
+
+	Node pop() {
+		if (empty()) return { -1,-1 };
+
+		Node top = heap[0];
+		heap[0] = heap[size - 1];
+		size--;
+		heapifyDown(0);
+
+		return top;
+	}
+};
+
+void dijkstra(int V, int source, int** graph) {
+	int* dist = new int[V];
+
+	for (int i = 0; i < V; i++) {
+		dist[i] = INT_MAX;
+	}
+
+	dist[source] = 0;
+}
+
 int main() {
 	int V;
 	cout << "Vertices? ";
