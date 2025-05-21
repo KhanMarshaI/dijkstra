@@ -285,5 +285,8 @@ int main() {
 	
 	//printGraph_toFile(adjList, V, "1000v_sparse.txt");
 
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
 	return 0;
 }

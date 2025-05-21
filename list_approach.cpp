@@ -317,5 +317,8 @@ int main() {
 
 	//g.printGraph();
 
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
 	return 0;
 }

@@ -315,5 +315,8 @@ int main() {
 	//printGraph(graph, V);
 	deleteGraph(graph, V);
 	
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
 	return 0;
 }
