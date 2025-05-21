@@ -283,7 +283,7 @@ int main() {
 
 	cout << "Dijsktra for " << V << " vertices took " << duration.count() << "microsec" << endl;
 	
-	printGraph_toFile(adjList, V, "1000v_sparse.txt");
+	//printGraph_toFile(adjList, V, "1000v_sparse.txt");
 
 	return 0;
 }
