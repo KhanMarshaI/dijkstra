@@ -222,12 +222,58 @@ public:
 
 void dijkstra(int V, int source, int** graph) {
 	int* dist = new int[V];
+	bool* visited = new bool[V];
 
 	for (int i = 0; i < V; i++) {
 		dist[i] = INT_MAX;
+		visited[i] = false;
 	}
 
 	dist[source] = 0;
+
+	MinHeap minHeap(V * V);
+	minHeap.push(source, 0);
+
+	while (!minHeap.empty()) {
+		Node top = minHeap.pop();
+
+		int u = top.vertex;
+		
+		if (visited[u]) continue;
+		visited[u] = true;
+
+		int d = top.dist;
+
+		int* neighbours = graph[u];
+
+		for (int v = 0; v < V; v++) {
+			int weight = neighbours[v];
+
+			if (graph[u][v] != -1 && !visited[v]) {
+				
+				if (dist[u] + weight < dist[v]) {
+					dist[v] = dist[u] + weight;
+
+					minHeap.push(v, dist[v]);
+				}
+
+			}
+
+
+		}
+
+	}
+
+	for (int i = 0; i < V; ++i) {
+		cout << "Distance from " << source << " to " << i << ": ";
+		if (dist[i] == INT_MAX)
+			cout << "INF\n";
+		else
+			cout << dist[i] << "\n";
+	}
+
+	delete[] dist;
+	delete[] visited;
 }
 
 int main() {
@@ -256,6 +302,14 @@ int main() {
 	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 
 	cout << "Random cost generation of " << edges << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
+
+	start = chrono::high_resolution_clock::now();
+	dijkstra(V, 0, graph);
+	stop = chrono::high_resolution_clock::now();
+
+	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+	cout << "Dijkstra on " << V << " vertices and " << edges << " edges took " << duration.count() << " microsec" << endl;
 
 	//populateGraph(graph, V, edges);
 	//printGraph(graph, V);
