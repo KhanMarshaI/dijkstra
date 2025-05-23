@@ -272,6 +272,9 @@ void dijkstra(int V, int source, int** graph) {
 	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 	cout << "Dijkstra on " << V << " vertices and "  << " took " << duration.count() << " microsec" << endl;
 
+	cout << "Press Enter to begin path reconstruction.";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+	cin.get();
 
 	for (int i = 0; i < V; ++i) {
 		cout << "Vertex " << i << ": ";
@@ -331,6 +334,10 @@ int main() {
 
 	cout << "Random cost generation of " << edges << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
+	cout << "Press Enter to run dijkstra.";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+	cin.get();
+
 	dijkstra(V, 0, graph);
 
 	//populateGraph(graph, V, edges);
@@ -338,6 +345,7 @@ int main() {
 	deleteGraph(graph, V);
 	
 	cout << "Press Enter to exit...";
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the input buffer
 	cin.get();
 
 	return 0;

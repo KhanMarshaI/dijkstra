@@ -245,6 +245,10 @@ void dijkstra(int V, int source, vector<vector<pair<int, int>>>& adjList) {
 	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 	cout << "Dijsktra for " << V << " vertices took " << duration.count() << "microsec" << endl;
 
+	cout << "Press Enter to begin path reconstruction.";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+	cin.get();
+
 	cout << "Shortest distances from source " << source << ":\n";
 	for (int i = 0; i < V; ++i) {
 		cout << "Vertex " << i << ": Distance = ";
@@ -303,12 +307,17 @@ int main() {
 	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 	cout << "Random cost generation of " << V << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
+	cout << "Press Enter to run dijkstra.";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+	cin.get();
+
 	dijkstra(V, 0, adjList);
 	
 	//printGraph_toFile(adjList, V, "1000v_sparse.txt");
 
-	std::cout << "Press Enter to exit...";
-	std::cin.get();
+	cout << "Press Enter to exit...";
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the input buffer
+	cin.get();
 
 	return 0;
 }
