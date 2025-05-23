@@ -221,12 +221,16 @@ public:
 };
 
 void dijkstra(int V, int source, int** graph) {
+	auto start = chrono::high_resolution_clock::now();
+
 	int* dist = new int[V];
 	bool* visited = new bool[V];
+	int* predecessor = new int[V];
 
 	for (int i = 0; i < V; i++) {
 		dist[i] = INT_MAX;
 		visited[i] = false;
+		predecessor[i] = -1;
 	}
 
 	dist[source] = 0;
@@ -253,7 +257,7 @@ void dijkstra(int V, int source, int** graph) {
 				
 				if (dist[u] + weight < dist[v]) {
 					dist[v] = dist[u] + weight;
-
+					predecessor[v] = u;
 					minHeap.push(v, dist[v]);
 				}
 
@@ -264,19 +268,43 @@ void dijkstra(int V, int source, int** graph) {
 
 	}
 
+	auto stop = chrono::high_resolution_clock::now();
+	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+	cout << "Dijkstra on " << V << " vertices and "  << " took " << duration.count() << " microsec" << endl;
+
+
 	for (int i = 0; i < V; ++i) {
-		cout << "Distance from " << source << " to " << i << ": ";
+		cout << "Vertex " << i << ": ";
 		if (dist[i] == INT_MAX)
-			cout << "INF\n";
+			cout << "Distance = INF, Predecessor = " << predecessor[i] << "\n";
 		else
-			cout << dist[i] << "\n";
+			cout << "Distance = " << dist[i] << ", Predecessor = " << predecessor[i] << "\n";
+	}
+
+	for (int i = 0; i < V; ++i) {
+		if (dist[i] == INT_MAX) continue; // Skip unreachable vertices
+		cout << "Path to " << i << ": ";
+		int v = i;
+		vector<int> path;
+		while (v != -1) {
+			path.push_back(v);
+			v = predecessor[v];
+		}
+		for (int j = path.size() - 1; j >= 0; --j) {
+			cout << path[j];
+			if (j > 0) cout << " -> ";
+		}
+		cout << "\n";
 	}
 
 	delete[] dist;
 	delete[] visited;
+	delete[] predecessor;
 }
 
 int main() {
+	cout << "Dijkstra Adjacency Matrix Implementation." << endl;;
+
 	int V;
 	cout << "Vertices? ";
 	cin >> V;
@@ -303,20 +331,14 @@ int main() {
 
 	cout << "Random cost generation of " << edges << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
-	start = chrono::high_resolution_clock::now();
 	dijkstra(V, 0, graph);
-	stop = chrono::high_resolution_clock::now();
-
-	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-
-	cout << "Dijkstra on " << V << " vertices and " << edges << " edges took " << duration.count() << " microsec" << endl;
 
 	//populateGraph(graph, V, edges);
 	//printGraph(graph, V);
 	deleteGraph(graph, V);
 	
-	std::cout << "Press Enter to exit...";
-	std::cin.get();
+	cout << "Press Enter to exit...";
+	cin.get();
 
 	return 0;
 }

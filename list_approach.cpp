@@ -244,8 +244,11 @@ Graph& random_cost_generator(Graph& g, int seed = 0, int start = 0,int end = INT
 }
 
 void dijkstra(int V, int source, Graph& g) {
+	auto start = chrono::high_resolution_clock::now();
+
 	vector<int> dist(V, INT_MAX);
 	dist[source] = 0;
+	vector<int> predecessor(V, -1);
 
 	MinHeap minHeap;
 	minHeap.push({ 0,source });
@@ -265,6 +268,7 @@ void dijkstra(int V, int source, Graph& g) {
 
 			if (dist[u] + weight < dist[v]) {
 				dist[v] = dist[u] + weight;
+				predecessor[v] = u;
 				minHeap.push({ dist[v],v });
 			}
 
@@ -273,14 +277,43 @@ void dijkstra(int V, int source, Graph& g) {
 
 	}
 
+	auto stop = chrono::high_resolution_clock::now();
+	auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+	cout << "Dijkstra on " << V << " vertices took " << duration.count() << "microsec" << endl;
+
 	cout << "Shortest distances from source " << source << ":\n";
 	for (int i = 0; i < V; ++i) {
-		cout << "Vertex " << i << ": " << dist[i] << endl;
+		cout << "Vertex " << i << ": Distance = ";
+		if (dist[i] == INT_MAX) {
+			cout << "INF, Predecessor = " << predecessor[i];
+		}
+		else {
+			cout << dist[i] << ", Predecessor = " << predecessor[i];
+		}
+		cout << endl;
+	}
+
+	cout << "\nShortest paths from source " << source << ":\n";
+	for (int i = 0; i < V; ++i) {
+		if (dist[i] == INT_MAX) continue; // Skip unreachable
+		cout << "Path to " << i << ": ";
+		vector<int> path;
+		int v = i;
+		while (v != -1) {
+			path.push_back(v);
+			v = predecessor[v];
+		}
+		for (int j = path.size() - 1; j >= 0; --j) {
+			cout << path[j];
+			if (j > 0) cout << " -> ";
+		}
+		cout << endl;
 	}
 
 }
 
 int main() {
+	cout << "Dijkstra with Raw AdjList approach." << endl;
 	int vertices;
 	cout << "Ver? ";
 	cin >> vertices;
@@ -307,18 +340,12 @@ int main() {
 
 	cout << "Random cost generation of " << edge_limit << " edges with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
-	start = chrono::high_resolution_clock::now();
 	dijkstra(vertices, 0, g);
-	stop = chrono::high_resolution_clock::now();
-
-	duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-
-	cout << "Dijkstra on " << vertices << " vertices with seed " << seed << " took " << duration.count() << "microsec" << endl;
 
 	//g.printGraph();
 
-	std::cout << "Press Enter to exit...";
-	std::cin.get();
+	cout << "Press Enter to exit...";
+	cin.get();
 
 	return 0;
 }
